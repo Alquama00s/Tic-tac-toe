@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:tic_tac_toe/game_state/cell_state.dart';
+
+import '../../board/bloc/game_state/cell_state.dart';
 
 class State extends Equatable {
   State();

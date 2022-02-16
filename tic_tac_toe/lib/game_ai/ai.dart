@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:tic_tac_toe/game_ai/lib/ai_data.dart';
 import 'package:tic_tac_toe/game_ai/lib/configuration.dart';
-import 'package:tic_tac_toe/game_state/cell_state.dart';
+
+import '../board/bloc/game_state/cell_state.dart';
 
 //X is ai
 
 class GameAi extends AiData {
   //List<int> gameBoard = List.filled(9, 0);
+  int moves = 0;
 
   ///this contains a priority sorted index of game board
   ///the zeroth index contains the index of current move;
@@ -45,28 +47,77 @@ class GameAi extends AiData {
   Map<int, int> secondLocalPriority = Map.from(AiData.secondPriority);
 
   int getCombinedPriority(int cellIndex) {
+    if (secondLocalPriority[cellIndex]! == -10000) {
+      //this cell is already filled
+      return -10000;
+    }
     int _max = -10000;
     for (var index in indexToConfigs[cellIndex]!) {
-      _max =
-          max(_max, AiData.firstPriority[configs[index].state.currentState]!);
+      _max = max(_max, AiData.firstPriority(configs[index].state.currentState));
     }
-
+    if (_max > 0) {
+      return _max;
+    }
+    if (_max == -1) {
+      return 1; // ai will win
+    }
+    if (_max == -2) {
+      return 0; // ai will block user from winning
+    }
     return _max + secondLocalPriority[cellIndex]!;
   }
 
+  List<int> pval = List.filled(9, 0);
+
   ///this sorts the [prioritySortedIndex]
   void sortPriorityIndex() {
-    prioritySortedIndex
-        .sort((a, b) => getCombinedPriority(a) - getCombinedPriority(b));
+    prioritySortedIndex.sort((a, b) {
+      pval[a] = getCombinedPriority(a);
+      pval[b] = getCombinedPriority(b);
+      return pval[b] - pval[a];
+    });
   }
 
-  int nextMove(int currentUserMove) {
-    for (var index in indexToConfigs[currentUserMove]!) {
-      configs[index].state.changeState(CellState.o);
+  int nextMove(int? currentUserMove) {
+    int? gameInterrupt; // this keeps track of if the game is won or lost
+    int temp;
+    moves++;
+    if (currentUserMove != null) {
+      for (var index in indexToConfigs[currentUserMove]!) {
+        configs[index].state.changeState(CellState.o);
+        temp = AiData.firstPriority(configs[index].state.currentState);
+        if (temp > 0) {
+          print(configs[index].state.currentState);
+          gameInterrupt = temp;
+        }
+      }
+      if (gameInterrupt != null) {
+        return gameInterrupt;
+      }
+      secondLocalPriority[currentUserMove] = -10000;
     }
-    secondLocalPriority[currentUserMove] = -10000;
     sortPriorityIndex();
+    for (var index in indexToConfigs[prioritySortedIndex[0]]!) {
+      configs[index].state.changeState(CellState.x);
+      temp = AiData.firstPriority(configs[index].state.currentState);
+      if (temp > 0) {
+        print("config " + configs[index].state.currentState);
+        gameInterrupt = temp;
+      }
+    }
+    if (gameInterrupt != null) {
+      return gameInterrupt += prioritySortedIndex[0];
+    }
+    if (moves >= 5) {
+      return 2000 + prioritySortedIndex[0];
+    }
     secondLocalPriority[prioritySortedIndex[0]] = -10000;
+    pval[prioritySortedIndex[0]] = -10000;
+    print("-----------");
+    print(pval);
+    print(prioritySortedIndex);
+    print(moves);
+
     return prioritySortedIndex[0];
   }
 }
