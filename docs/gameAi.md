@@ -1,6 +1,6 @@
 # Game Ai (module at lib/gameAi)
 
-There are 8 ways of winning the game 3 rows, 3 columns and 2 diagonals. Each of these ways consist of three positions, and at any instant the positions can be in one of the following states.
+There are 8 ways(configuration) of winning the game 3 rows, 3 columns and 2 diagonals. Each of these ways consist of three positions, and at any instant the positions can be in one of the following states.
 
 
 assuming the ai is playing X
