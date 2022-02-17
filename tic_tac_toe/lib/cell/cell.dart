@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../board/bloc/game_state/cell_state.dart';
 
 class Cell extends StatelessWidget {
@@ -14,35 +14,17 @@ class Cell extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constr) {
-      if (MediaQuery.of(context).size.aspectRatio > 1) {
-        return GestureDetector(
-          onTap: () => sendEvent(index),
-          child: Container(
-            color: Colors.amberAccent,
-            width: constr.maxHeight / 3,
-            height: constr.maxHeight / 3,
-            child: Center(
-              child: Text(view(state)),
-            ),
-          ),
-        );
-      }
-
-      return GestureDetector(
-        onTap: () => sendEvent(index),
-        child: Container(
-          color: Colors.amberAccent,
-          width: constr.maxWidth / 3,
-          height: constr.maxWidth / 3,
-          child: Center(
-            child: Text(
-              view(state),
-              style: const TextStyle(color: Colors.black, fontSize: 30.0),
-            ),
+    return GestureDetector(
+      onTap: () => sendEvent(index),
+      child: Neumorphic(
+        margin: const EdgeInsets.all(3),
+        child: Center(
+          child: Text(
+            view(state),
+            style: const TextStyle(color: Colors.black, fontSize: 30.0),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

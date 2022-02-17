@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:tic_tac_toe/board/bloc/game_bloc.dart';
 import 'package:tic_tac_toe/board/bloc/game_event.dart';
 import 'package:tic_tac_toe/cell/cell.dart';
@@ -18,37 +19,54 @@ class Board extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constr) {
-          if (MediaQuery.of(context).size.aspectRatio > 1) {
-            return Container(
-              color: Colors.red,
-              width: constr.maxHeight,
-              height: constr.maxHeight,
-              child: BlocBuilder(
-                bloc: gameBloc,
-                builder: (context, GameState state) => GridView.count(
-                  crossAxisCount: 3,
-                  children: [
-                    for (int i = 0; i < state.gameBoard.length; i++)
-                      Cell(
-                        index: i,
-                        state: state.gameBoard[i],
-                        sendEvent: triggerTapEvent,
-                      )
-                  ],
+          if (MediaQuery.of(context).size.aspectRatio >= 1) {
+            return ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                SizedBox(
+                  width: constr.maxHeight,
+                  height: constr.maxHeight,
+                  child: BlocBuilder(
+                    bloc: gameBloc,
+                    builder: (context, GameState state) => GridView.count(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        for (int i = 0; i < state.gameBoard.length; i++)
+                          Cell(
+                            index: i,
+                            state: state.gameBoard[i],
+                            sendEvent: triggerTapEvent,
+                          )
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                Center(
+                  child: NeumorphicButton(
+                    child: const Text('u play first'),
+                    onPressed: () => gameBloc.add(AiPlayFirst()),
+                  ),
+                )
+              ],
             );
           }
-          return Column(
+          return ListView(
             children: [
               Container(
-                color: Colors.red,
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
                 width: constr.maxWidth,
                 height: constr.maxWidth,
                 child: BlocBuilder(
                   bloc: gameBloc,
                   builder: (context, GameState state) => GridView.count(
                     crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       for (int i = 0; i < state.gameBoard.length; i++)
                         Cell(
@@ -61,9 +79,9 @@ class Board extends StatelessWidget {
                 ),
               ),
               Center(
-                child: TextButton(
+                child: NeumorphicButton(
                   child: const Text('u play first'),
-                  onPressed: () => gameBloc.add(AiResponse()),
+                  onPressed: () => gameBloc.add(AiPlayFirst()),
                 ),
               )
             ],

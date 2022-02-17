@@ -8,11 +8,20 @@ import 'package:tic_tac_toe/game_ai/ai.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc() : super(GameState.initialState()) {
+    on<AiPlayFirst>((event, emit) {
+      if (_gameBoard.every((element) => element == CellState.u)) {
+        add(AiResponse());
+      }
+    });
     on<PlayerResponse>((event, emit) {
       if (turn) {
         turn = false;
-        emit(update(event.index, CellState.o));
-        add(AiResponse(playerResponseIndex: event.index));
+        if (_gameBoard[event.index] == CellState.u) {
+          emit(update(event.index, CellState.o));
+          add(AiResponse(playerResponseIndex: event.index));
+        } else {
+          turn = true;
+        }
       }
     });
     on<AiResponse>((event, emit) {
