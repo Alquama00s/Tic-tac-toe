@@ -13,3 +13,5 @@ class AiResponse extends GameEvent {
 }
 
 class AiPlayFirst extends GameEvent {}
+
+class ResetGame extends GameEvent {}

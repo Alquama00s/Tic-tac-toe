@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:tic_tac_toe/board/bloc/game_event.dart';
+import 'package:tic_tac_toe/board/bloc/game_state/game_interrupt_state.dart';
 import 'package:tic_tac_toe/board/bloc/game_state/cell_state.dart';
 import 'package:tic_tac_toe/board/bloc/game_state/game_state.dart';
 import 'package:tic_tac_toe/game_ai/ai.dart';
@@ -30,23 +31,30 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if (nextMove > 8) {
         if (nextMove > 3000) {
           print("draw" + nextMove.toString());
+          emit(updateInterrupt(GameInterruptState.draw));
         } else if (nextMove > 2000) {
           emit(update(nextMove - 2000, CellState.x));
           //sleep(const Duration(milliseconds: 500));
           print("draw" + nextMove.toString());
+          emit(updateInterrupt(GameInterruptState.draw));
         } else if (nextMove > 1001) {
           emit(update(nextMove - 1001, CellState.x));
           //sleep(const Duration(milliseconds: 500));
           print("I won" + nextMove.toString());
+          emit(updateInterrupt(GameInterruptState.aiWon));
         } else {
           print("u won");
+          emit(updateInterrupt(GameInterruptState.playerWon));
         }
-        emit(GameState.initialState());
-        reset();
       } else {
         emit(update(nextMove, CellState.x));
+        turn = true;
       }
+    });
+    on<ResetGame>((event, emit) {
       turn = true;
+      emit(GameState.initialState());
+      reset();
     });
   }
   bool turn = true;
@@ -58,6 +66,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   GameState update(int index, CellState input) {
     _gameBoard[index] = input;
     return GameState(_gameBoard);
+  }
+
+  GameState updateInterrupt(GameInterruptState state) {
+    return GameState(_gameBoard)..updateInterruptState(state);
   }
 
   void reset() {

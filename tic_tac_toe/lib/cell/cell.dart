@@ -12,17 +12,41 @@ class Cell extends StatelessWidget {
   final CellState state;
   final Function sendEvent;
   final int index;
+
+  NeumorphicBoxShape? getBoxShape() {
+    switch (state) {
+      case CellState.o:
+        return const NeumorphicBoxShape.circle();
+      case CellState.x:
+        return const NeumorphicBoxShape.rect();
+      default:
+        return null;
+    }
+  }
+
+  Color? getColor() {
+    switch (state) {
+      case CellState.o:
+        return Colors.blue;
+      case CellState.x:
+        return Colors.red;
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => sendEvent(index),
-      child: Neumorphic(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.all(3),
-        child: Center(
-          child: Text(
-            view(state),
-            style: const TextStyle(color: Colors.black, fontSize: 30.0),
-          ),
+        padding: state == CellState.u
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.all(30),
+        child: Neumorphic(
+          style: NeumorphicStyle(boxShape: getBoxShape(), color: getColor()),
         ),
       ),
     );
