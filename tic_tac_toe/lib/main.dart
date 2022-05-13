@@ -13,6 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeumorphicApp(
       title: "Tic Tac Toe",
+      color: Colors.white,
+      darkTheme: neumorphicDefaultTheme,
       home: SafeArea(child: Board()),
     );
   }

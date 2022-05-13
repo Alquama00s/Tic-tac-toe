@@ -43,13 +43,15 @@ class Board extends StatelessWidget {
                                                   25 * factor,
                                                   35 * factor,
                                                   25 * factor),
-                                              child: Text(
-                                                  "${state.drawCount}\nDraws",
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.ubuntu(
-                                                      fontSize: 30,
-                                                      fontWeight:
-                                                          FontWeight.bold))))),
+                                              child: FittedBox(
+                                                child: Text(
+                                                    "${state.drawCount}\nDraws",
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.ubuntu(
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              )))),
                                   Flexible(
                                       flex: 1,
                                       child: Center(
@@ -59,11 +61,13 @@ class Board extends StatelessWidget {
                                             25 * factor,
                                             35 * factor,
                                             25 * factor),
-                                        child: Text("${state.winCount}\nWins",
-                                            textAlign: TextAlign.center,
-                                            style: GoogleFonts.ubuntu(
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.bold)),
+                                        child: FittedBox(
+                                          child: Text("${state.winCount}\nWins",
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.ubuntu(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
                                       ))),
                                   Flexible(
                                       flex: 1,
@@ -74,34 +78,38 @@ class Board extends StatelessWidget {
                                                   25 * factor,
                                                   35 * factor,
                                                   25 * factor),
-                                              child: Text(
-                                                  "${state.aiWinCount}\nLost",
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.ubuntu(
-                                                      fontSize: 30,
-                                                      fontWeight:
-                                                          FontWeight.bold)))))
+                                              child: FittedBox(
+                                                child: Text(
+                                                    "${state.aiWinCount}\nLost",
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.ubuntu(
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ))))
                                 ]),
                               ),
                             ),
                             Flexible(
                               flex: 3,
-                              child: Neumorphic(
-                                padding: const EdgeInsets.all(8),
-                                margin: const EdgeInsets.all(8),
-                                style:
-                                    const NeumorphicStyle(color: Colors.blue),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Center(
-                                    child: Text(
-                                      state.infoMessage,
-                                      textAlign: TextAlign.center,
-                                      maxLines: null,
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: 50,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
+                              child: SingleChildScrollView(
+                                child: Neumorphic(
+                                  padding: const EdgeInsets.all(8),
+                                  margin: const EdgeInsets.all(8),
+                                  style:
+                                      const NeumorphicStyle(color: Colors.blue),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Center(
+                                      child: Text(
+                                        state.infoMessage,
+                                        textAlign: TextAlign.center,
+                                        maxLines: null,
+                                        style: GoogleFonts.ubuntu(
+                                            fontSize: 50,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                 ),
