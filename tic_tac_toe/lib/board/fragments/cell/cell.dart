@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import '../board/bloc/game_state/cell_state.dart';
+import 'package:tic_tac_toe/board/bloc/game_bloc.dart';
+import 'package:tic_tac_toe/board/bloc/game_event.dart';
+import '../../bloc/game_state/cell_state.dart';
 
 class Cell extends StatelessWidget {
-  const Cell(
-      {Key? key,
-      required this.index,
-      required this.state,
-      required this.sendEvent})
-      : super(key: key);
+  const Cell({
+    Key? key,
+    required this.index,
+    required this.state,
+  }) : super(key: key);
   final CellState state;
-  final Function sendEvent;
   final int index;
 
   NeumorphicBoxShape? getBoxShape() {
@@ -38,7 +39,10 @@ class Cell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => sendEvent(index),
+      onTap: () {
+        if (state != CellState.u) return;
+        BlocProvider.of<GameBloc>(context).add(PlayerResponse(index));
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.all(3),

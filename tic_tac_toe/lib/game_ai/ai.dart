@@ -15,6 +15,7 @@ class GameAi extends AiData {
   ///the zeroth index contains the index of current move;
   List<int> prioritySortedIndex = List.generate(9, (i) => i);
 
+  ///win configurations
   final List<Configuration> configs = List.unmodifiable([
     Configuration(const [0, 1, 2]), //row 1 -0
     Configuration(const [3, 4, 5]), //row 2 -1
@@ -67,9 +68,11 @@ class GameAi extends AiData {
     return _max + secondLocalPriority[cellIndex]!;
   }
 
+  //contains the priority of all index acc to both priority plan
   List<int> pval = List.filled(9, 0);
 
-  ///this sorts the [prioritySortedIndex]
+  ///this sorts the [prioritySortedIndex] in decrasing order
+  ///do current move stays at index 0
   void sortPriorityIndex() {
     prioritySortedIndex.sort((a, b) {
       pval[a] = getCombinedPriority(a);
@@ -82,41 +85,55 @@ class GameAi extends AiData {
     int? gameInterrupt; // this keeps track of if the game is won or lost
     int temp;
     moves++;
+    //the current move may be null when ai plays first
     if (currentUserMove != null) {
       for (var index in indexToConfigs[currentUserMove]!) {
+        //change the state of board acc. to user input
         configs[index].state.changeState(CellState.o);
+        //check whether the game is won or lost by using fiirst priority paln
         temp = AiData.firstPriority(configs[index].state.currentState);
         if (temp > 0) {
-          print(configs[index].state.currentState);
+          //the game is won or lost if ai gives +ve integer
+          //as priority
           gameInterrupt = temp;
         }
       }
+
       if (gameInterrupt != null) {
         return gameInterrupt;
       }
+      //reduce the priority of this cell bcoz it
+      //is occupied by user bt second priority paln
       secondLocalPriority[currentUserMove] = -10000;
     }
+    //sort the indices based on both priority plans
     sortPriorityIndex();
+
     for (var index in indexToConfigs[prioritySortedIndex[0]]!) {
+      //change the state of board acc. to ai input
       configs[index].state.changeState(CellState.x);
+      //check whether the game is won or lost by using fiirst priority paln
       temp = AiData.firstPriority(configs[index].state.currentState);
       if (temp > 0) {
-        print("config " + configs[index].state.currentState);
+        //the game is won or lost if ai gives +ve integer
+        //as priority
         gameInterrupt = temp;
       }
     }
     if (gameInterrupt != null) {
+      //send back 1001+current move to display on screen
       return gameInterrupt += prioritySortedIndex[0];
     }
     if (moves >= 5) {
+      //game is draw bcoz all cells are filled
       return 2000 + prioritySortedIndex[0];
     }
+    //reduce the priority of this cell bcoz it
+    //will be occupied by ai bt second priority paln
     secondLocalPriority[prioritySortedIndex[0]] = -10000;
+    //reduce the priority of this cell bcoz it
+    //will be occupied by ai bt both priority paln
     pval[prioritySortedIndex[0]] = -10000;
-    print("-----------");
-    print(pval);
-    print(prioritySortedIndex);
-    print(moves);
 
     return prioritySortedIndex[0];
   }

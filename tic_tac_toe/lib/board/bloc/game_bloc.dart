@@ -14,11 +14,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         add(AiResponse());
       }
     });
-    on<PlayerResponse>((event, emit) {
+    on<PlayerResponse>((event, emit) async {
       if (turn) {
         turn = false;
         if (_gameBoard[event.index] == CellState.u) {
-          emit(update(event.index, CellState.o));
+          _currentState.updateMove(event.index, CellState.o);
+          emit(_currentState.emitter());
+          await Future.delayed(const Duration(milliseconds: 500));
           add(AiResponse(playerResponseIndex: event.index));
         } else {
           turn = true;
@@ -27,33 +29,28 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
     on<AiResponse>((event, emit) {
       int nextMove = ai.nextMove(event.playerResponseIndex);
-      print("nestMaove" + nextMove.toString());
       if (nextMove > 8) {
         if (nextMove > 3000) {
-          print("draw" + nextMove.toString());
-          emit(updateInterrupt(GameInterruptState.draw));
+          _currentState.updateInterruptState(GameInterruptState.draw);
         } else if (nextMove > 2000) {
-          emit(update(nextMove - 2000, CellState.x));
-          //sleep(const Duration(milliseconds: 500));
-          print("draw" + nextMove.toString());
-          emit(updateInterrupt(GameInterruptState.draw));
+          _currentState.updateInterruptState(GameInterruptState.draw);
         } else if (nextMove > 1001) {
-          emit(update(nextMove - 1001, CellState.x));
-          //sleep(const Duration(milliseconds: 500));
-          print("I won" + nextMove.toString());
-          emit(updateInterrupt(GameInterruptState.aiWon));
+          _currentState.updateMove(nextMove - 1001, CellState.x);
+          _currentState.updateInterruptState(GameInterruptState.aiWon);
         } else {
-          print("u won");
-          emit(updateInterrupt(GameInterruptState.playerWon));
+          _currentState.updateInterruptState(GameInterruptState.playerWon);
         }
       } else {
-        emit(update(nextMove, CellState.x));
+        _currentState.updateMove(nextMove, CellState.x);
+
         turn = true;
       }
+      emit(_currentState.emitter());
     });
     on<ResetGame>((event, emit) {
       turn = true;
-      emit(GameState.initialState());
+      _currentState.resetGame();
+      emit(_currentState.emitter());
       reset();
     });
   }
@@ -61,19 +58,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   GameAi ai = GameAi();
 
-  List<CellState> _gameBoard = List.filled(9, CellState.u);
+  List<CellState> get _gameBoard => _currentState.gameBoard;
 
-  GameState update(int index, CellState input) {
-    _gameBoard[index] = input;
-    return GameState(_gameBoard);
-  }
-
-  GameState updateInterrupt(GameInterruptState state) {
-    return GameState(_gameBoard)..updateInterruptState(state);
-  }
+  final GameState _currentState = GameState.initialState();
 
   void reset() {
     ai = GameAi();
-    _gameBoard = List.filled(9, CellState.u);
   }
 }

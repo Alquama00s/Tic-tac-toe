@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NeumorphicApp(
+      title: "Tic Tac Toe",
       home: SafeArea(child: Board()),
     );
   }
